@@ -1,6 +1,8 @@
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -9,8 +11,10 @@ import java.util.Date;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
@@ -20,18 +24,22 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
 
 public class BigDumbTestMain {
+  
+  static JLabel name;
 
   public static void main(String[] args) {
 
     SwingUtilities.invokeLater(new Runnable() {
       public void run() {
-        JFrame editorFrame = new JFrame("Pic Name");
+        // start frame elements
+        final JFrame editorFrame = new JFrame("Pic Name");
         editorFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        name = new JLabel();
 
         // get file
         File img = new File("img/DSC01219.JPG");
         
-        StringBuffer finalName = new StringBuffer();
+        final StringBuffer finalName = new StringBuffer();
         
         // get image
         BufferedImage image = null;
@@ -63,7 +71,27 @@ public class BigDumbTestMain {
         JLabel metadate = new JLabel(finalName.toString());
         editorFrame.getContentPane().add(metadate, BorderLayout.PAGE_END);
         
-        // TODO get title input
+        // get title input
+        final JTextField inputField = new JTextField();
+        inputField.setToolTipText("Enter the title for the image");
+        JButton inputButton = new JButton("OK");
+        inputButton.addActionListener(new ActionListener() {
+          public void actionPerformed(ActionEvent e) {
+            String title = inputField.getText();
+            finalName.append(" - " + title);
+            name.setText(finalName.toString());
+            // TODO refresh frame
+            editorFrame.getContentPane().add(name, BorderLayout.SOUTH);
+            editorFrame.revalidate();
+            editorFrame.repaint();
+          }
+        });
+        editorFrame.getContentPane().add(inputField, BorderLayout.NORTH);
+        editorFrame.getContentPane().add(inputButton, BorderLayout.EAST);
+        
+        // show name
+        name.setText(finalName.toString());
+        editorFrame.getContentPane().add(name, BorderLayout.SOUTH);
         
         // show frame
         editorFrame.pack();
