@@ -28,10 +28,12 @@ public class BigDumbTestMain {
         JFrame editorFrame = new JFrame("Pic Name");
         editorFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
+        // get file
         File img = new File("img/DSC01219.JPG");
         
         StringBuffer finalName = new StringBuffer();
         
+        // get image
         BufferedImage image = null;
         try {
           image = ImageIO.read(img);
@@ -44,8 +46,8 @@ public class BigDumbTestMain {
         JLabel jLabel = new JLabel();
         jLabel.setIcon(imageIcon);
         editorFrame.getContentPane().add(jLabel, BorderLayout.CENTER);
-
         
+        // get date
         try {
           Metadata metadata = ImageMetadataReader.readMetadata(img);
           ExifSubIFDDirectory directory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
@@ -58,13 +60,16 @@ public class BigDumbTestMain {
           e.printStackTrace();
           System.exit(1);
         }
-       
         JLabel metadate = new JLabel(finalName.toString());
         editorFrame.getContentPane().add(metadate, BorderLayout.PAGE_END);
         
+        // TODO get title input
+        
+        // show frame
         editorFrame.pack();
         editorFrame.setLocationRelativeTo(null);
         editorFrame.setVisible(true);
+        
       }
     });
   }
