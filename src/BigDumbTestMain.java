@@ -29,6 +29,9 @@ public class BigDumbTestMain {
         editorFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         File img = new File("img/DSC01219.JPG");
+        
+        StringBuffer finalName = new StringBuffer();
+        
         BufferedImage image = null;
         try {
           image = ImageIO.read(img);
@@ -47,10 +50,7 @@ public class BigDumbTestMain {
           Metadata metadata = ImageMetadataReader.readMetadata(img);
           ExifSubIFDDirectory directory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
           Date date = directory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
-          SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
-          String formattedDate = format.format(date);
-          JLabel metadate = new JLabel(formattedDate);
-          editorFrame.getContentPane().add(metadate, BorderLayout.PAGE_END);
+          finalName.append((new SimpleDateFormat("yyyy MM dd")).format(date));
         } catch (ImageProcessingException e) {
           e.printStackTrace();
           System.exit(1);
@@ -59,7 +59,9 @@ public class BigDumbTestMain {
           System.exit(1);
         }
        
-        editorFrame.setPreferredSize(new Dimension(800, 600));
+        JLabel metadate = new JLabel(finalName.toString());
+        editorFrame.getContentPane().add(metadate, BorderLayout.PAGE_END);
+        
         editorFrame.pack();
         editorFrame.setLocationRelativeTo(null);
         editorFrame.setVisible(true);
