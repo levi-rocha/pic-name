@@ -66,20 +66,15 @@ public class BigDumbTestMain {
           System.exit(1);
         }
         
-        System.out.println(inputDirectory.getAbsolutePath());
-        System.out.println(outputDirectory.getAbsolutePath());
-        
-        // get file
+        // get jpgs
         imgs = new ArrayList<File>();
-        // final File img = new File("img/DSC01219.JPG");
-        for (File img : inputDirectory.listFiles()) {
-          System.out.println(img.getName());
+        for (File file : inputDirectory.listFiles()) {
           String extension = "";
-          int i = img.getName().lastIndexOf('.');
+          int i = file.getName().lastIndexOf('.');
           if (i > 0) {
-              extension = img.getName().substring(i+1);
+              extension = file.getName().substring(i+1);
               if (extension.toLowerCase().equals("jpg")) {
-                imgs.add(img);
+                imgs.add(file);
               }
           }
         }
@@ -87,7 +82,6 @@ public class BigDumbTestMain {
         // show first image
         if (!imgs.isEmpty()) {
           File img = imgs.get(0);
-          System.out.println(img.toString());
           showImage(img);
         }
       }
@@ -161,7 +155,5 @@ public class BigDumbTestMain {
     editorFrame.pack();
     editorFrame.setLocationRelativeTo(null);
     editorFrame.setVisible(true);
-    
-    System.out.println("frame visible");
   }
 }
