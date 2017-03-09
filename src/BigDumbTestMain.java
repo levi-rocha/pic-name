@@ -15,6 +15,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -32,6 +33,7 @@ public class BigDumbTestMain {
 
   static List<File> imgs;
   static JFrame editorFrame;
+  static File inputDirectory, outputDirectory;
 
   public static void main(String[] args) {
     SwingUtilities.invokeLater(new Runnable() {
@@ -39,13 +41,47 @@ public class BigDumbTestMain {
         // start frame elements
         editorFrame = new JFrame("Pic Name");
         editorFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
+        
+        // browse for input folder
+        JFileChooser browser = new JFileChooser();
+        browser.setDialogTitle("Select input Folder");
+        browser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int returnVal = browser.showOpenDialog(editorFrame);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+          inputDirectory = browser.getSelectedFile();
+        } else {
+          JOptionPane.showMessageDialog(editorFrame, "This is a useless, non-descriptive error message");
+          System.exit(1);
+        }
+        
+        // browse for output folder
+        browser = new JFileChooser();
+        browser.setDialogTitle("Select output folder");
+        browser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        returnVal = browser.showOpenDialog(editorFrame);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+          outputDirectory = browser.getSelectedFile();
+        } else {
+          JOptionPane.showMessageDialog(editorFrame, "This is a useless, non-descriptive error message");
+          System.exit(1);
+        }
+        
+        System.out.println(inputDirectory.getAbsolutePath());
+        System.out.println(outputDirectory.getAbsolutePath());
+        
         // get file
         imgs = new ArrayList<File>();
-        File dir = new File("img");
         // final File img = new File("img/DSC01219.JPG");
-        for (File img : dir.listFiles()) {
-          imgs.add(img);
+        for (File img : inputDirectory.listFiles()) {
+          System.out.println(img.getName());
+          String extension = "";
+          int i = img.getName().lastIndexOf('.');
+          if (i > 0) {
+              extension = img.getName().substring(i+1);
+              if (extension.toLowerCase().equals("jpg")) {
+                imgs.add(img);
+              }
+          }
         }
 
         // show first image
@@ -59,7 +95,7 @@ public class BigDumbTestMain {
   }
 
   public static void renameImg(File image, String name) {
-    File renamed = new File("img/" + name + ".jpg");
+    File renamed = new File(outputDirectory.getAbsolutePath() + "/" + name + ".jpg");
     image.renameTo(renamed);
   }
 
@@ -125,5 +161,7 @@ public class BigDumbTestMain {
     editorFrame.pack();
     editorFrame.setLocationRelativeTo(null);
     editorFrame.setVisible(true);
+    
+    System.out.println("frame visible");
   }
 }
