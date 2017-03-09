@@ -29,7 +29,7 @@ import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
 
-public class BigDumbTestMain {
+public class PicNameApp {
 
   static List<File> imgs;
   static JFrame editorFrame;
