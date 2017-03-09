@@ -99,9 +99,10 @@ public class BigDumbTestMain {
     layout.setPreferredSize(new Dimension(800, 640));
     final StringBuffer finalName = new StringBuffer();
 
-    loadImage(img, layout);
     loadMetadate(img, layout, finalName);
     initInputForm(img, layout, finalName);
+    loadImage(img, layout);
+    
     refreshFrame(layout);
   }
 
@@ -169,6 +170,8 @@ public class BigDumbTestMain {
 
   private static void refreshFrame(final JPanel layout) {
     editorFrame.setContentPane(layout);
+    editorFrame.getRootPane().setDefaultButton((JButton) layout.getComponent(2));
+    layout.getComponent(1).requestFocus();
     editorFrame.pack();
     editorFrame.setLocationRelativeTo(null);
     editorFrame.setVisible(true);
