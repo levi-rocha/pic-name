@@ -2,6 +2,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -34,6 +35,9 @@ public class PicNameApp {
   private List<File> imgs;
   private JFrame editorFrame;
   private File inputDirectory, outputDirectory;
+  
+  private int width;
+  private int height;
 
   public static void main(String[] args) {
     SwingUtilities.invokeLater(new Runnable() {
@@ -42,6 +46,10 @@ public class PicNameApp {
         // start frame elements
         app.editorFrame = new JFrame("Pic Name");
         app.editorFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        app.width = (int) Math.round(screenSize.getWidth())*5/6;
+        app.height = (int) Math.round(screenSize.getHeight())*5/6;
 
         app.browseForInputDirectory();
         app.browseForOutputDirectory();
@@ -54,7 +62,7 @@ public class PicNameApp {
 
   private void browseForInputDirectory() {
     JFileChooser browser = new JFileChooser();
-    browser.setPreferredSize(new Dimension(800, 600));
+    browser.setPreferredSize(new Dimension(width, height));
     browser.setDialogTitle("Select input Folder");
     browser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     int returnVal = browser.showOpenDialog(editorFrame);
@@ -67,7 +75,7 @@ public class PicNameApp {
 
   private void browseForOutputDirectory() {
     JFileChooser browser = new JFileChooser();
-    browser.setPreferredSize(new Dimension(800, 600));
+    browser.setPreferredSize(new Dimension(width, height));
     browser.setDialogTitle("Select output folder");
     browser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     int returnVal = browser.showOpenDialog(editorFrame);
@@ -111,7 +119,7 @@ public class PicNameApp {
   public boolean showImage(File img) {
     // create the layout
     final JPanel layout = new JPanel(new FlowLayout());
-    layout.setPreferredSize(new Dimension(800, 640));
+    layout.setPreferredSize(new Dimension(width, height));
     final StringBuffer finalName = new StringBuffer();
 
     if (!loadMetadate(img, layout, finalName)) {
@@ -135,7 +143,7 @@ public class PicNameApp {
           "This is a useless, non-descriptive error message");
       System.exit(1);
     }
-    Image scaledImage = image.getScaledInstance(800, 600, Image.SCALE_SMOOTH);
+    Image scaledImage = image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
     ImageIcon imageIcon = new ImageIcon(scaledImage);
     JLabel jLabel = new JLabel();
     jLabel.setIcon(imageIcon);
