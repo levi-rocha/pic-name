@@ -32,198 +32,198 @@ import com.drew.metadata.exif.ExifSubIFDDirectory;
 
 public class PicNameApp {
 
-  private List<File> imgs;
-  private JFrame editorFrame;
-  private File inputDirectory, outputDirectory;
-  
-  private int width;
-  private int height;
+	private List<File> imgs;
+	private JFrame editorFrame;
+	private File inputDirectory, outputDirectory;
 
-  public static void main(String[] args) {
-    SwingUtilities.invokeLater(new Runnable() {
-      public void run() {
-        PicNameApp app = new PicNameApp();
-        // start frame elements
-        app.editorFrame = new JFrame("Pic Name");
-        app.editorFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        app.width = (int) Math.round(screenSize.getWidth())*5/6;
-        app.height = (int) Math.round(screenSize.getHeight())*5/6;
+	private int width;
+	private int height;
 
-        app.browseForInputDirectory();
-        app.browseForOutputDirectory();
-        app.loadImages();
+	public static void main(String[] args) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				PicNameApp app = new PicNameApp();
+				// start frame elements
+				app.editorFrame = new JFrame("Pic Name");
+				app.editorFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        app.showNextImage();
-      }
-    });
-  }
+				Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+				app.width = (int) Math.round(screenSize.getWidth()) * 5 / 6;
+				app.height = (int) Math.round(screenSize.getHeight()) * 5 / 6;
 
-  private void browseForInputDirectory() {
-    JFileChooser browser = new JFileChooser();
-    browser.setPreferredSize(new Dimension(width, height));
-    browser.setDialogTitle("Select input Folder");
-    browser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-    int returnVal = browser.showOpenDialog(editorFrame);
-    if (returnVal == JFileChooser.APPROVE_OPTION) {
-      inputDirectory = browser.getSelectedFile();
-    } else {
-      System.exit(1);
-    }
-  }
+				app.browseForInputDirectory();
+				app.browseForOutputDirectory();
+				app.loadImages();
 
-  private void browseForOutputDirectory() {
-    JFileChooser browser = new JFileChooser();
-    browser.setPreferredSize(new Dimension(width, height));
-    browser.setDialogTitle("Select output folder");
-    browser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-    int returnVal = browser.showOpenDialog(editorFrame);
-    if (returnVal == JFileChooser.APPROVE_OPTION) {
-      outputDirectory = browser.getSelectedFile();
-    } else {
-      System.exit(1);
-    }
-  }
+				app.showNextImage();
+			}
+		});
+	}
 
-  private void loadImages() {
-    imgs = new ArrayList<File>();
-    for (File file : inputDirectory.listFiles()) {
-      String extension = "";
-      int i = file.getName().lastIndexOf('.');
-      if (i > 0) {
-        extension = file.getName().substring(i + 1);
-        if (extension.toLowerCase().equals("jpg")) {
-          imgs.add(file);
-        }
-      }
-    }
-    for (File file : imgs) {
-      System.out.println(file.getName());
-    }
-  }
+	private void browseForInputDirectory() {
+		JFileChooser browser = new JFileChooser();
+		browser.setPreferredSize(new Dimension(width, height));
+		browser.setDialogTitle("Select input Folder");
+		browser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		int returnVal = browser.showOpenDialog(editorFrame);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			inputDirectory = browser.getSelectedFile();
+		} else {
+			System.exit(1);
+		}
+	}
 
-  private void showNextImage() {
-    boolean success = false;
-    while (!success) {
-      if (!imgs.isEmpty()) {
-        File img = imgs.get(0);
-        success = showImage(img);
-      } else {
-        JOptionPane.showMessageDialog(editorFrame, "All images done!");
-        System.exit(0);
-      }
-    }
-  }
+	private void browseForOutputDirectory() {
+		JFileChooser browser = new JFileChooser();
+		browser.setPreferredSize(new Dimension(width, height));
+		browser.setDialogTitle("Select output folder");
+		browser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		int returnVal = browser.showOpenDialog(editorFrame);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			outputDirectory = browser.getSelectedFile();
+		} else {
+			System.exit(1);
+		}
+	}
 
-  public boolean showImage(File img) {
-    // create the layout
-    final JPanel layout = new JPanel(new FlowLayout());
-    layout.setPreferredSize(new Dimension(width, height));
-    final StringBuffer finalName = new StringBuffer();
+	private void loadImages() {
+		imgs = new ArrayList<File>();
+		for (File file : inputDirectory.listFiles()) {
+			String extension = "";
+			int i = file.getName().lastIndexOf('.');
+			if (i > 0) {
+				extension = file.getName().substring(i + 1);
+				if (extension.toLowerCase().equals("jpg")) {
+					imgs.add(file);
+				}
+			}
+		}
+		for (File file : imgs) {
+			System.out.println(file.getName());
+		}
+	}
 
-    if (!loadMetadate(img, layout, finalName)) {
-      imgs.remove(img);
-      return false;
-    }
-    initInputForm(img, layout, finalName);
-    loadImage(img, layout);
+	private void showNextImage() {
+		boolean success = false;
+		while (!success) {
+			if (!imgs.isEmpty()) {
+				File img = imgs.get(0);
+				success = showImage(img);
+			} else {
+				JOptionPane.showMessageDialog(editorFrame, "All images done!");
+				System.exit(0);
+			}
+		}
+	}
 
-    refreshFrame(layout);
-    return true;
-  }
+	public boolean showImage(File img) {
+		// create the layout
+		final JPanel layout = new JPanel(new FlowLayout());
+		layout.setPreferredSize(new Dimension(width, height));
+		final StringBuffer finalName = new StringBuffer();
 
-  private void loadImage(File img, final JPanel layout) {
-    BufferedImage image = null;
-    try {
-      image = ImageIO.read(img);
-    } catch (Exception e) {
-      e.printStackTrace();
-      JOptionPane.showMessageDialog(editorFrame,
-          "This is a useless, non-descriptive error message");
-      System.exit(1);
-    }
-    Image scaledImage = image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-    ImageIcon imageIcon = new ImageIcon(scaledImage);
-    JLabel jLabel = new JLabel();
-    jLabel.setIcon(imageIcon);
-    layout.add(jLabel, BorderLayout.CENTER);
-  }
+		if (!loadMetadate(img, layout, finalName)) {
+			// no metadate
+			JOptionPane.showMessageDialog(editorFrame, "No metadata found for file.");
+		}
+		initInputForm(img, layout, finalName);
+		try {
+			loadImage(img, layout);
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(editorFrame, "Could not load image");
+			imgs.remove(img);
+			return false;
+		}
 
-  private boolean loadMetadate(File img, final JPanel layout, final StringBuffer finalName) {
-    try {
-      Metadata metadata = ImageMetadataReader.readMetadata(img);
-      if (metadata == null) {
-        return false;
-      }
-      ExifSubIFDDirectory directory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
-      if (directory == null) {
-        return false;
-      }
-      Date date = directory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
-      if (date == null) {
-        return false;
-      }
-      finalName.append((new SimpleDateFormat("yyyy MM dd")).format(date) + " - ");
-    } catch (ImageProcessingException e) {
-      e.printStackTrace();
-      return false;
-    } catch (IOException e) {
-      e.printStackTrace();
-      return false;
-    }
-    JLabel metadate = new JLabel(finalName.toString());
-    layout.add(metadate, BorderLayout.PAGE_END);
-    return true;
-  }
+		refreshFrame(layout);
+		return true;
+	}
 
-  private void initInputForm(File img, final JPanel layout, final StringBuffer finalName) {
-    final JTextField inputField = new JTextField(40);
-    inputField.setToolTipText("Enter the title for the image");
-    JButton inputButton = new JButton("OK");
-    inputButton.addActionListener(new renameListener(img, finalName, inputField));
-    /*
-     * inputButton.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent
-     * e) { finalName.append(inputField.getText()); renameImg(img, finalName.toString());
-     * imgs.remove(img); showNextImage(); } });
-     */
-    layout.add(inputField);
-    layout.add(inputButton);
-  }
+	private void loadImage(File img, final JPanel layout) throws IOException {
+		BufferedImage image = null;
+		image = ImageIO.read(img);
+		Image scaledImage = image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+		ImageIcon imageIcon = new ImageIcon(scaledImage);
+		JLabel jLabel = new JLabel();
+		jLabel.setIcon(imageIcon);
+		layout.add(jLabel, BorderLayout.CENTER);
+	}
 
-  private class renameListener implements ActionListener {
+	private boolean loadMetadate(File img, final JPanel layout, final StringBuffer finalName) {
+		try {
+			Metadata metadata = ImageMetadataReader.readMetadata(img);
+			if (metadata == null) {
+				return false;
+			}
+			ExifSubIFDDirectory directory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
+			if (directory == null) {
+				return false;
+			}
+			Date date = directory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
+			if (date == null) {
+				return false;
+			}
+			finalName.append((new SimpleDateFormat("yyyy MM dd")).format(date) + " - ");
+		} catch (ImageProcessingException e) {
+			e.printStackTrace();
+			return false;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+		JLabel metadate = new JLabel(finalName.toString());
+		layout.add(metadate, BorderLayout.PAGE_END);
+		return true;
+	}
 
-    private File img;
-    private StringBuffer finalName;
-    private JTextField inputField;
+	private void initInputForm(File img, final JPanel layout, final StringBuffer finalName) {
+		final JTextField inputField = new JTextField(40);
+		inputField.setToolTipText("Enter the title for the image");
+		JButton inputButton = new JButton("OK");
+		inputButton.addActionListener(new renameListener(img, finalName, inputField));
+		/*
+		 * inputButton.addActionListener(new ActionListener() { public void
+		 * actionPerformed(ActionEvent e) {
+		 * finalName.append(inputField.getText()); renameImg(img,
+		 * finalName.toString()); imgs.remove(img); showNextImage(); } });
+		 */
+		layout.add(inputField);
+		layout.add(inputButton);
+	}
 
-    public renameListener(File img, StringBuffer finalName, JTextField inputField) {
-      this.img = img;
-      this.finalName = finalName;
-      this.inputField = inputField;
-    }
+	private class renameListener implements ActionListener {
 
-    public void actionPerformed(ActionEvent e) {
-      finalName.append(inputField.getText());
-      renameImg(img, finalName.toString());
-      imgs.remove(img);
-      showNextImage();
-    }
+		private File img;
+		private StringBuffer finalName;
+		private JTextField inputField;
 
-  }
+		public renameListener(File img, StringBuffer finalName, JTextField inputField) {
+			this.img = img;
+			this.finalName = finalName;
+			this.inputField = inputField;
+		}
 
-  public void renameImg(File image, String name) {
-    File renamed = new File(outputDirectory.getAbsolutePath() + "/" + name + ".jpg");
-    image.renameTo(renamed);
-  }
+		public void actionPerformed(ActionEvent e) {
+			finalName.append(inputField.getText());
+			renameImg(img, finalName.toString());
+			imgs.remove(img);
+			showNextImage();
+		}
 
-  private void refreshFrame(final JPanel layout) {
-    editorFrame.setContentPane(layout);
-    editorFrame.getRootPane().setDefaultButton((JButton) layout.getComponent(2));
-    layout.getComponent(1).requestFocus();
-    editorFrame.pack();
-    editorFrame.setLocationRelativeTo(null);
-    editorFrame.setVisible(true);
-  }
+	}
+
+	public void renameImg(File image, String name) {
+		File renamed = new File(outputDirectory.getAbsolutePath() + "/" + name + ".jpg");
+		image.renameTo(renamed);
+	}
+
+	private void refreshFrame(final JPanel layout) {
+		editorFrame.setContentPane(layout);
+		editorFrame.getRootPane().setDefaultButton((JButton) layout.getComponent(2));
+		layout.getComponent(1).requestFocus();
+		editorFrame.pack();
+		editorFrame.setLocationRelativeTo(null);
+		editorFrame.setVisible(true);
+	}
 
 }
