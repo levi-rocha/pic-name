@@ -125,7 +125,9 @@ public class PicNameApp {
 		if (!loadMetadate(img, layout, finalName)) {
 			// no metadate
 			JOptionPane.showMessageDialog(editorFrame, "No metadata found for file.");
-		}
+		} 
+		JLabel metadate = new JLabel(finalName.toString());
+		layout.add(metadate, BorderLayout.PAGE_END);
 		initInputForm(img, layout, finalName);
 		try {
 			loadImage(img, layout);
@@ -134,7 +136,7 @@ public class PicNameApp {
 			imgs.remove(img);
 			return false;
 		}
-
+		
 		refreshFrame(layout);
 		return true;
 	}
@@ -171,8 +173,6 @@ public class PicNameApp {
 			e.printStackTrace();
 			return false;
 		}
-		JLabel metadate = new JLabel(finalName.toString());
-		layout.add(metadate, BorderLayout.PAGE_END);
 		return true;
 	}
 
