@@ -108,6 +108,7 @@ public class PicNameApp {
         }
       }
     }
+    System.out.println("Found files to be renamed:");
     for (File file : imgs) {
       System.out.println(file.getName());
     }
