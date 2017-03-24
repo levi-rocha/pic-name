@@ -120,6 +120,7 @@ public class PicNameApp {
       if (!imgs.isEmpty()) {
         File img = imgs.get(0);
         success = showImage(img);
+        editorFrame.setTitle(img.getName());
       } else {
         JOptionPane.showMessageDialog(editorFrame, "All images done!");
         System.exit(0);
@@ -206,18 +207,34 @@ public class PicNameApp {
     inputField.setHorizontalAlignment(JTextField.CENTER);
     inputField.setToolTipText("Enter the title for the image");
     JButton inputButton = new JButton("OK");
-    inputButton.addActionListener(new renameListener(img, finalName, inputField));
+    inputButton.addActionListener(new RenameListener(img, finalName, inputField));
     layout.add(inputField);
     layout.add(inputButton);
+    JButton skipButton = new JButton("Skip");
+    skipButton.addActionListener(new SkipListener(img));
+    layout.add(skipButton);
+  }
+  
+  private class SkipListener implements ActionListener {
+    private File img;
+    
+    public SkipListener(File img) {
+      this.img = img;
+    }
+    
+    public void actionPerformed(ActionEvent e) {
+      imgs.remove(img);
+      showNextImage();
+    }
   }
 
-  private class renameListener implements ActionListener {
+  private class RenameListener implements ActionListener {
 
     private File img;
     private StringBuffer finalName;
     private JTextField inputField;
 
-    public renameListener(File img, StringBuffer finalName, JTextField inputField) {
+    public RenameListener(File img, StringBuffer finalName, JTextField inputField) {
       this.img = img;
       this.finalName = finalName;
       this.inputField = inputField;
