@@ -208,7 +208,7 @@ public class PicNameApp {
     JLabel metadate = new JLabel(finalName.toString());
     metadate.setFont(font);
     layout.add(metadate);
-    final JTextField inputField = new JTextField(16);
+    final JTextField inputField = new JTextField(36);
     inputField.setFont(font);
     inputField.setHorizontalAlignment(JTextField.CENTER);
     inputField.setToolTipText("Enter the title for the image");
@@ -258,6 +258,7 @@ public class PicNameApp {
     skipListener = new SkipListener(img);
     skipButton.addActionListener(skipListener);
     layout.add(skipButton);
+    //inputField.setPreferredSize(new Dimension(layout.getPreferredSize().width, inputField.getPreferredSize().height));
   }
 
   private class SkipListener implements ActionListener {
