@@ -6,6 +6,8 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -37,6 +39,11 @@ public class PicNameApp {
   private List<File> imgs;
   private JFrame editorFrame;
   private File inputDirectory, outputDirectory;
+
+  public static final ArrayList<String> inputCache = new ArrayList<String>();
+  public static int cacheCursorIndex = -1;
+  public static boolean navigatingCache = false;
+  public static SkipListener skipListener;
 
   private int width;
   private int height;
@@ -206,23 +213,67 @@ public class PicNameApp {
     inputField.setFont(font);
     inputField.setHorizontalAlignment(JTextField.CENTER);
     inputField.setToolTipText("Enter the title for the image");
+    inputField.addKeyListener(new KeyAdapter() {
+      public void keyReleased(KeyEvent e) {}
+
+      public void keyTyped(KeyEvent e) {}
+
+      public void keyPressed(KeyEvent e) {
+        JTextField textField = (JTextField) e.getSource();
+        if (e.getKeyCode() == 38) {
+          if (cacheCursorIndex == inputCache.size()-1) {
+            if (!inputCache.isEmpty()) {
+              if (navigatingCache) {
+                inputCache.remove(inputCache.size()-1);
+              }
+              inputCache.add(textField.getText());
+              navigatingCache = true;
+              cacheCursorIndex = inputCache.size() - 2;
+              textField.setText(inputCache.get(cacheCursorIndex));
+            }
+          } else {
+            if (cacheCursorIndex > 0) {
+              cacheCursorIndex--;
+              textField.setText(inputCache.get(cacheCursorIndex));
+            }
+          }
+          textField.selectAll();
+        } else if (e.getKeyCode() == 40) {
+          if (!navigatingCache) {
+            textField.selectAll();
+          } else if (!inputCache.isEmpty() && cacheCursorIndex < inputCache.size()-1) {
+            cacheCursorIndex++;
+            textField.setText(inputCache.get(cacheCursorIndex));
+            textField.selectAll();
+          }
+        }
+
+      }
+
+    });
     JButton inputButton = new JButton("OK");
     inputButton.addActionListener(new RenameListener(img, finalName, inputField));
     layout.add(inputField);
     layout.add(inputButton);
     JButton skipButton = new JButton("Skip");
-    skipButton.addActionListener(new SkipListener(img));
+    skipListener = new SkipListener(img);
+    skipButton.addActionListener(skipListener);
     layout.add(skipButton);
   }
-  
+
   private class SkipListener implements ActionListener {
     private File img;
-    
+
     public SkipListener(File img) {
       this.img = img;
     }
-    
+
     public void actionPerformed(ActionEvent e) {
+      skip();
+    }
+    
+    public void skip() {
+      System.out.println("skipping " + img.getName());
       imgs.remove(img);
       showNextImage();
     }
@@ -241,13 +292,28 @@ public class PicNameApp {
     }
 
     public void actionPerformed(ActionEvent e) {
-      String targetName = finalName.toString() + inputField.getText();
+      String text = inputField.getText();
+      if (text.equals("")) {
+        skipListener.skip();
+        return;
+      }
+      String targetName = finalName.toString() + text;
       if (renameImg(img, targetName)) {
+        if (!inputCache.isEmpty() && navigatingCache) {
+          inputCache.remove(inputCache.size() - 1);
+        }
+        inputCache.add(text);
+        if (inputCache.size() > 10) {
+          inputCache.remove(0);
+        }
+        cacheCursorIndex = inputCache.size() - 1;
+        navigatingCache = false;
         imgs.remove(img);
         showNextImage();
       } else {
-        JOptionPane.showMessageDialog(editorFrame, "Could not rename image. Please check if the input is a valid file name.");
-        inputField.setText("");
+        JOptionPane.showMessageDialog(editorFrame,
+            "Could not rename image. Either input is not a valid file name or there is already a file with the same name.");
+        inputField.selectAll();
       }
     }
   }
@@ -262,7 +328,6 @@ public class PicNameApp {
     editorFrame.getRootPane().setDefaultButton((JButton) inputForm.getComponent(2));
     inputForm.getComponent(1).requestFocus();
     editorFrame.pack();
-    editorFrame.setLocationRelativeTo(null);
     editorFrame.setVisible(true);
   }
 
