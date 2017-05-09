@@ -140,7 +140,6 @@ public class PicNameApp {
     final JPanel topLayout = new JPanel(new FlowLayout());
     final JPanel bottomLayout = new JPanel(new FlowLayout());
     final JPanel contentPane = new JPanel(new BorderLayout());
-    // contentPane.setPreferredSize(new Dimension(width, height));
     final StringBuffer finalName = new StringBuffer();
 
     loadMetadate(img, finalName);
@@ -221,10 +220,10 @@ public class PicNameApp {
       public void keyPressed(KeyEvent e) {
         JTextField textField = (JTextField) e.getSource();
         if (e.getKeyCode() == 38) {
-          if (cacheCursorIndex == inputCache.size()-1) {
+          if (cacheCursorIndex == inputCache.size() - 1) {
             if (!inputCache.isEmpty()) {
               if (navigatingCache) {
-                inputCache.remove(inputCache.size()-1);
+                inputCache.remove(inputCache.size() - 1);
               }
               inputCache.add(textField.getText());
               navigatingCache = true;
@@ -241,7 +240,7 @@ public class PicNameApp {
         } else if (e.getKeyCode() == 40) {
           if (!navigatingCache) {
             textField.selectAll();
-          } else if (!inputCache.isEmpty() && cacheCursorIndex < inputCache.size()-1) {
+          } else if (!inputCache.isEmpty() && cacheCursorIndex < inputCache.size() - 1) {
             cacheCursorIndex++;
             textField.setText(inputCache.get(cacheCursorIndex));
             textField.selectAll();
@@ -271,7 +270,7 @@ public class PicNameApp {
     public void actionPerformed(ActionEvent e) {
       skip();
     }
-    
+
     public void skip() {
       System.out.println("skipping " + img.getName());
       imgs.remove(img);
