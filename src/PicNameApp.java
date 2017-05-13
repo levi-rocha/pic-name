@@ -44,6 +44,8 @@ public class PicNameApp {
   public static int cacheCursorIndex = -1;
   public static boolean navigatingCache = false;
   public static SkipListener skipListener;
+  
+  public static int maxCacheSize = 30;
 
   private int width;
   private int height;
@@ -303,7 +305,7 @@ public class PicNameApp {
           inputCache.remove(inputCache.size() - 1);
         }
         inputCache.add(text);
-        if (inputCache.size() > 10) {
+        if (inputCache.size() > maxCacheSize) {
           inputCache.remove(0);
         }
         cacheCursorIndex = inputCache.size() - 1;
