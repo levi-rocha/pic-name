@@ -47,8 +47,8 @@ public class PicNameApp {
 
     public static int maxCacheSize = 30;
 
-    private int width;
-    private int height;
+    private int maxWidth;
+    private int maxHeight;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -69,8 +69,8 @@ public class PicNameApp {
 
                 Dimension screenSize = Toolkit.getDefaultToolkit()
                         .getScreenSize();
-                app.width = (int) Math.round(screenSize.getWidth()) * 5 / 6;
-                app.height = (int) Math.round(screenSize.getHeight()) * 5 / 6;
+                app.maxWidth = (int) Math.round(screenSize.getWidth() * 5 / 6);
+                app.maxHeight = (int) Math.round(screenSize.getHeight() * 5 / 6);
 
                 app.browseForInputDirectory();
                 app.browseForOutputDirectory();
@@ -83,7 +83,7 @@ public class PicNameApp {
 
     private void browseForInputDirectory() {
         JFileChooser browser = new JFileChooser();
-        browser.setPreferredSize(new Dimension(width / 2, height / 2));
+        browser.setPreferredSize(new Dimension(maxWidth / 2, maxHeight / 2));
         browser.setDialogTitle("Select input Folder");
         browser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int returnVal = browser.showOpenDialog(editorFrame);
@@ -97,7 +97,7 @@ public class PicNameApp {
 
     private void browseForOutputDirectory() {
         JFileChooser browser = new JFileChooser();
-        browser.setPreferredSize(new Dimension(width / 2, height / 2));
+        browser.setPreferredSize(new Dimension(maxWidth / 2, maxHeight / 2));
         browser.setDialogTitle("Select output folder");
         browser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int returnVal = browser.showOpenDialog(editorFrame);
@@ -165,23 +165,21 @@ public class PicNameApp {
     }
 
     private void loadImage(File img, final JPanel layout) throws IOException {
-        BufferedImage image = null;
-        image = ImageIO.read(img);
+        BufferedImage image = ImageIO.read(img);
         ImageIcon imageIcon;
-        if (image.getWidth() > width) {
-            Image scaledImage = image.getScaledInstance(width,
-                    Math.round(image.getHeight() * (width * 1f / image
-                            .getWidth())), Image.SCALE_SMOOTH);
-            imageIcon = new ImageIcon(scaledImage);
-        } else if (image.getHeight() > height) {
-            Image scaledImage =
-                    image.getScaledInstance(Math.round(image.getWidth() *
-                                    (height * 1f / image.getHeight())),
-                            height, Image.SCALE_SMOOTH);
-            imageIcon = new ImageIcon(scaledImage);
-        } else {
-            imageIcon = new ImageIcon(image);
+        float imageWidth = image.getWidth(), imageHeight = image.getHeight();
+        if (imageWidth > maxWidth) {
+            final float scaleFactor = maxWidth *1f/imageWidth;
+            imageWidth = maxWidth;
+            imageHeight = imageHeight*scaleFactor;
         }
+        if (imageHeight > maxHeight) {
+            final float scaleFactor = maxHeight *1f/imageHeight;
+            imageHeight = maxHeight;
+            imageWidth = imageWidth*scaleFactor;
+        }
+        imageIcon = new ImageIcon(image.getScaledInstance(Math.round(imageWidth),
+                Math.round(imageHeight), Image.SCALE_SMOOTH));
         JLabel jLabel = new JLabel();
         jLabel.setIcon(imageIcon);
         layout.add(jLabel, BorderLayout.CENTER);
@@ -276,7 +274,7 @@ public class PicNameApp {
         skipButton.addActionListener(skipListener);
         layout.add(skipButton);
         //inputField.setPreferredSize(new Dimension(layout.getPreferredSize()
-        // .width, inputField.getPreferredSize().height));
+        // .maxWidth, inputField.getPreferredSize().maxHeight));
     }
 
     private class SkipListener implements ActionListener {
